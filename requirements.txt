@@ -1,6 +1,7 @@
-pyclip
-sounddevice
-pyautogui
-requests
-pynput
-wave
+# "wave" is not listed here on purpose: it is a module of the python standard
+# library, and the package of that name on PyPI is an unrelated project.
+pyclip>=0.7.0
+sounddevice>=0.4.6
+pyautogui>=0.9.54
+requests>=2.31.0
+pynput>=1.7.6
