@@ -4,6 +4,14 @@ import sounddevice as sd
 import config
 import json
 
+def input_devices():
+    """
+    Devices that can record. A speaker often carries the same name as the microphone
+    next to it, so the two must not be confused. list_devices.py shows this same list,
+    which is what makes the names it prints usable in config.priority_mic_names.
+    """
+    return [device for device in sd.query_devices() if device['max_input_channels'] > 0]
+
 def select_mic():
     """
     Returns the index and name of the desired microphone in JSON format based on availability.
@@ -12,7 +20,7 @@ def select_mic():
     """
     mic_info = {"index": config.fallback_mic_index, "name": "Default"}
     try:
-        devices = sd.query_devices()
+        devices = input_devices()
 
         for preferred_mic in config.priority_mic_names:
             for device in devices:
