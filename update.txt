@@ -1,4 +1,30 @@
 ********************************************************************************
+** 06.08.2026
+********************************************************************************
+The app no longer restarts itself when the microphone changes, and no longer runs
+select_mic.py in a subprocess every 5 seconds. Nothing to do for this, but five new
+settings can be added to config.py. All of them are optional and have the defaults
+shown below:
+
+max_record_duration_s = 300  # stop recording after this many seconds, so a stuck hotkey can't record forever
+transcribe_timeout_s = 60    # give up on the transcription server after this many seconds
+save_recordings = True       # set to False to keep no copy of what you dictate: no .wav files, and no transcript in the log
+keep_recordings_days = 0     # delete recordings older than this many days. 0 - keep them forever
+send_token = False           # send config.token to the server. It used to require editing voice_typing.py
+
+Also note that the keys of substitutions_case_insensitive are now matched as plain
+text instead of as regular expressions, so "Гид.Див" matches only "Гид.Див" and not
+"ГидXДив". Move any entry that was meant as a pattern to substitutions_regex. For the
+same reason a backreference like \1 on the replacement side of that list is now pasted
+literally - those entries belong in substitutions_regex as well.
+
+To update:
+1) Stop application: Ctrl + C
+2) git pull
+3) Start application:
+./start.sh
+
+********************************************************************************
 ** 07.11.2023
 ********************************************************************************
 Add new lines to your config:

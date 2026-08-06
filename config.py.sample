@@ -7,7 +7,8 @@ substitutions_case_sensitive = {
     "Meet Journey": "MidJourney",
 }
 
-# Case-insensitive substitutions
+# Case-insensitive substitutions. The keys are plain text, not regular expressions:
+# a dot matches a dot only. Use substitutions_regex below for patterns.
 substitutions_case_insensitive = {
     "mid-journey": "MidJourney",
 }
@@ -28,6 +29,7 @@ hotkey_1 = keyboard.Key.cmd_r
 hotkey_2 = {keyboard.Key.ctrl_l, keyboard.Key.shift, keyboard.Key.alt_l, keyboard.KeyCode.from_char('j')}
 
 min_audio_duration_ms = 100  # minimum audio duration in milliseconds to send to server
+max_record_duration_s = 300  # stop recording after this many seconds, so a stuck hotkey can't record forever
 
 fallback_mic_index = 0
 # Use this command in shell to enumerate devices and their names to add to priority list:
@@ -38,6 +40,9 @@ restore_clipborad_delay = 1 #    delay before restoring clipboard. Without delay
 v_delay = 0.5    # if you see Just let a 'v' typed, instead of your dictation, then increase the delay. Used for Windows
 
 recordings_dir = 'recordings'
+save_recordings = True   # set to False to keep no copy of what you dictate: no .wav
+                         # files, and no transcript in the log either
+keep_recordings_days = 0 # delete recordings older than this many days. 0 - keep them forever
 
 # localization menu support for MacOs
 mac_menu = [
@@ -47,8 +52,13 @@ mac_menu = [
     {'edit': 'Изменить', 'paste': 'Вставить'},
 ]
 
+# Note that http sends your recordings over the network in the clear, and that the
+# server decides which text gets pasted. Prefer https with a server you trust.
 transcribe_server = 'http://demo.voicehotkey.com:5000/transcribe'
 languages = 'ru,en'
+transcribe_timeout_s = 60  # give up on the transcription server after this many seconds
 
-# replace token value with your value
+# replace token value with your value, and set send_token to True if your server
+# asks for one. While send_token is False the token is not sent at all.
+send_token = False
 token = '0174659ab45a4a7ca4008c2a5a884f22'
