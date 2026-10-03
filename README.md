@@ -16,7 +16,7 @@ brew install python3
 sudo apt-get install -y xclip python3 python3-pip
 
 # copy project
-git clone https://github.com/bsnjoy/voice-typing.git
+git clone https://github.com/stepankandrushin/voice-typing.git
 
 cd voice-typing
 /usr/bin/env python3 -m pip install -r requirements.txt
