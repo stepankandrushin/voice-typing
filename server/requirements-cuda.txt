@@ -1,0 +1,5 @@
+-r requirements.txt
+# CUDA 12 runtime libraries that CTranslate2 loads dynamically. Linux only:
+# on Windows and macOS install the CUDA runtime and cuDNN yourself, or use CPU.
+nvidia-cublas-cu12; sys_platform == "linux"
+nvidia-cudnn-cu12; sys_platform == "linux"

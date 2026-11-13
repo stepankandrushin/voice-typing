@@ -1,0 +1,7 @@
+faster-whisper>=1.1.0
+# av 19 dropped metadata_errors, which faster-whisper passes to av.open()
+av>=18,<19
+fastapi>=0.115
+uvicorn[standard]>=0.32
+python-multipart>=0.0.9
+huggingface_hub>=0.26

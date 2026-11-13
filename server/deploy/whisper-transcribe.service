@@ -1,0 +1,15 @@
+[Unit]
+Description=Whisper transcription server for voice-typing
+After=network-online.target
+
+[Service]
+Type=simple
+# Adjust both paths if the repository is cloned somewhere else.
+WorkingDirectory=%h/voice-typing/server
+EnvironmentFile=%h/voice-typing/server/.env
+ExecStart=%h/voice-typing/server/run.sh
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

@@ -9,7 +9,8 @@ from datetime import datetime
 import json
 import config
 
-filename = "/Users/s/file-1701394926697.wav"
+# Usage: python3 voice_test.py [recording.wav]
+filename = sys.argv[1] if len(sys.argv) > 1 else 'sample.wav'
 
 def printt(text):
     current_time = datetime.now().strftime("%H:%M:%S.%f")[:-3]  # Format current time
