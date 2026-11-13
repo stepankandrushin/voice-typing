@@ -33,6 +33,38 @@ vim config.py
 
 ```
 
+## Windows
+
+Requires Python 3.12 (the `py` launcher). Run from the project folder:
+
+```
+py -3.12 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+copy config.py.sample config.py
+
+# optional: list input devices to pick a specific microphone in config.py
+.venv\Scripts\python.exe list_devices.py
+```
+
+Edit `config.py`:
+
+- `hotkey_1 = keyboard.Key.ctrl_r` (right Ctrl; it must be a single key, not a set)
+- `transcribe_server`, `languages` and, if the server asks for one, `send_token = True` with `token`
+- leave `priority_mic_names = []` to record from the Windows default input device
+
+Start the application (it stops the previous instance first):
+
+```
+start.cmd
+```
+
+Windows must be allowed to use the microphone: **Settings → Privacy & security → Microphone → Let desktop apps access your microphone**.
+
+Notes:
+
+- The text is pasted with Ctrl+V, so the target window has to be focused. A non-elevated app cannot paste into an elevated window, so run `start.cmd` as administrator if you dictate into such windows.
+- If a paste shows the previous clipboard instead of the dictation, increase `restore_clipborad_delay` in `config.py`.
+
 In Mac OS after running you will need to allow your application to monitor key strokes from another apps, access to Microphone, access to control other apps (to paste data), to do this after application was started:
 
 ### Allow access to monitor Hotkeys
@@ -62,6 +94,21 @@ You need to approve Terminal app in all 4 sections:
 Example of approving Terminal app in Accessibility section:  
 ![Terminal app approved in the Accessibility section](img/privacy_security_accessibility.jpeg)
 
+
+## Transcription server
+
+The app records while the hotkey is held and sends the recording to the server named by `transcribe_server` in `config.py`, and the text the server sends back is pasted. The sample config points at a demo server. Any server that answers this request works, so you can run your own:
+
+```
+POST <transcribe_server>?languages=ru,en&app=voice-typing-<version>[&token=<token>]
+multipart/form-data, field "file": the recording as a WAV file
+```
+
+- `languages` comes from `languages` in `config.py`: the languages to expect.
+- `token` is sent only when `send_token = True`, so a server can turn away requests without it.
+- The answer is JSON: `{"text": "the recognised text", "language": "ru"}`. `text` is pasted after the substitutions in `config.py`; `language` is only logged and can be left out. An HTTP error, or a `text` shorter than two characters, pastes nothing.
+
+The OpenAI transcription API (`/v1/audio/transcriptions`) and the servers that copy it take a different request, with the API key in a header and a model name in the form, so the app cannot use them directly.
 
 ## Update application
 ```

@@ -164,7 +164,9 @@ end tell
 def paste(text):
     saved_clipboard = None
     try:
-        saved_clipboard = pyclip.paste()
+        # As text: on Windows pyclip.paste() returns UTF-8 bytes, and restoring bytes
+        # puts them back as a DIB instead of text, losing the previous clipboard.
+        saved_clipboard = pyclip.paste(text=True)
     except Exception as e:
         log.warning(f'Could not read the clipboard: {e}')
 
@@ -201,6 +203,9 @@ def paste_from_clipboard(text):
         if config.v_delay > 0:
             time.sleep(config.v_delay)
         pyautogui.hotkey('ctrl', 'v')
+        # Give the focused app time to read the clipboard before paste() restores
+        # the previous contents, otherwise it pastes the old text.
+        time.sleep(config.restore_clipborad_delay)
 
 
 # --- recordings on disk -----------------------------------------------------
