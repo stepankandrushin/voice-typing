@@ -150,8 +150,10 @@ as a shell file, so quote values that contain spaces, for example
 `auto` for the device means CUDA when a GPU can be used and CPU otherwise. An
 explicit `WHISPER_DEVICE` is never overridden silently: if CUDA was requested
 explicitly and cannot be initialised, the server fails at startup with the
-underlying error. An automatic choice that fails at load time is retried on the
-CPU with a warning.
+underlying error. At startup the model also runs once on a second of silence, so
+a CUDA setup that loads but cannot run (no cuBLAS or cuDNN, as with the CPU-only
+`requirements.txt` on a machine with an NVIDIA driver) is caught there: an
+automatic choice that fails is retried on the CPU with a warning.
 
 ## API
 
@@ -257,7 +259,7 @@ device count with `.venv/bin/python -c "import ctranslate2;
 print(ctranslate2.get_cuda_device_count())"`. Zero means the driver, the CUDA
 runtime or the `nvidia-*` wheels are missing.
 
-**`Could not locate cudnn_ops64_9.dll` or a similar library error on Linux.**
+**`Library libcublas.so.12 is not found`, `Could not locate cudnn_ops64_9.dll` or a similar library error.**
 Install `requirements-cuda.txt` and start the server through `run.sh`, which adds
 the wheel libraries to `LD_LIBRARY_PATH`. On Windows install cuDNN 9 from NVIDIA
 and put its `bin` directory on `PATH`.

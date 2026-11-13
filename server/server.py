@@ -19,6 +19,7 @@ import os
 import threading
 import time
 
+import numpy as np
 from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.responses import JSONResponse
 from faster_whisper import WhisperModel
@@ -95,6 +96,24 @@ log.info("Loading model %s (device=%s, compute_type=%s)", MODEL_PATH, DEVICE, CO
 _t0 = time.time()
 
 
+def _new_model() -> WhisperModel:
+    """Create the model on DEVICE/COMPUTE_TYPE and run it once.
+
+    Creating it succeeds even when the libraries that inference needs (cuBLAS,
+    cuDNN) cannot be loaded, for instance on a machine with an NVIDIA driver and
+    the CPU-only requirements.txt. One encoder pass over a second of silence
+    makes such a setup fail here, at startup, instead of on every request.
+    """
+    m = WhisperModel(
+        MODEL_PATH,
+        device=DEVICE,
+        compute_type=COMPUTE_TYPE,
+        cpu_threads=CPU_THREADS,
+    )
+    m.detect_language(audio=np.zeros(SAMPLE_RATE, dtype=np.float32))
+    return m
+
+
 def _load_model() -> WhisperModel:
     """Load the model, falling back to CPU only when the device was chosen
     automatically. An explicit WHISPER_DEVICE=cuda fails loudly instead of
@@ -102,31 +121,21 @@ def _load_model() -> WhisperModel:
     """
     global DEVICE, COMPUTE_TYPE
     try:
-        return WhisperModel(
-            MODEL_PATH,
-            device=DEVICE,
-            compute_type=COMPUTE_TYPE,
-            cpu_threads=CPU_THREADS,
-        )
+        return _new_model()
     except Exception:
         if REQUESTED_DEVICE != "auto" or (DEVICE, COMPUTE_TYPE) == ("cpu", "int8"):
             raise
         log.exception(
-            "Could not initialise the model on %s/%s, falling back to CPU (int8)",
+            "Could not run the model on %s/%s, falling back to CPU (int8)",
             DEVICE,
             COMPUTE_TYPE,
         )
         DEVICE, COMPUTE_TYPE = "cpu", "int8"
-        return WhisperModel(
-            MODEL_PATH,
-            device=DEVICE,
-            compute_type=COMPUTE_TYPE,
-            cpu_threads=CPU_THREADS,
-        )
+        return _new_model()
 
 
 model = _load_model()
-log.info("Model loaded in %.1f s", time.time() - _t0)
+log.info("Model loaded on %s/%s in %.1f s", DEVICE, COMPUTE_TYPE, time.time() - _t0)
 
 # One model instance - one request at a time; requests are short dictations.
 _lock = threading.Lock()
@@ -169,8 +178,11 @@ def health() -> dict:
     }
 
 
+# A plain def, not async: FastAPI runs it in its thread pool, so while one
+# recording is being transcribed the server still answers /health and accepts
+# the next request, which then waits for the lock.
 @app.post("/transcribe")
-async def transcribe(
+def transcribe(
     request: Request,
     file: UploadFile = File(...),
     languages: str | None = Query(default=None),
@@ -179,7 +191,7 @@ async def transcribe(
 ):
     _check_token(request, token)
 
-    audio = await file.read()
+    audio = file.file.read()
     if not audio:
         raise HTTPException(status_code=400, detail="empty file")
     if len(audio) > MAX_UPLOAD_BYTES:
