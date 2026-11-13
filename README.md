@@ -95,6 +95,21 @@ Example of approving Terminal app in Accessibility section:
 ![Terminal app approved in the Accessibility section](img/privacy_security_accessibility.jpeg)
 
 
+## Transcription server
+
+The app records while the hotkey is held and sends the recording to the server named by `transcribe_server` in `config.py`, and the text the server sends back is pasted. The sample config points at a demo server. Any server that answers this request works, so you can run your own:
+
+```
+POST <transcribe_server>?languages=ru,en&app=voice-typing-<version>[&token=<token>]
+multipart/form-data, field "file": the recording as a WAV file
+```
+
+- `languages` comes from `languages` in `config.py`: the languages to expect.
+- `token` is sent only when `send_token = True`, so a server can turn away requests without it.
+- The answer is JSON: `{"text": "the recognised text", "language": "ru"}`. `text` is pasted after the substitutions in `config.py`; `language` is only logged and can be left out. An HTTP error, or a `text` shorter than two characters, pastes nothing.
+
+The OpenAI transcription API (`/v1/audio/transcriptions`) and the servers that copy it take a different request, with the API key in a header and a model name in the form, so the app cannot use them directly.
+
 ## Update application
 ```
 # Stop application using Ctrl+C
