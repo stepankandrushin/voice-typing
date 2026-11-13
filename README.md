@@ -33,6 +33,38 @@ vim config.py
 
 ```
 
+## Windows
+
+Requires Python 3.12 (the `py` launcher). Run from the project folder:
+
+```
+py -3.12 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+copy config.py.sample config.py
+
+# optional: list input devices to pick a specific microphone in config.py
+.venv\Scripts\python.exe list_devices.py
+```
+
+Edit `config.py`:
+
+- `hotkey_1 = keyboard.Key.ctrl_r` (right Ctrl; it must be a single key, not a set)
+- `transcribe_server`, `languages` and, if the server asks for one, `send_token = True` with `token`
+- leave `priority_mic_names = []` to record from the Windows default input device
+
+Start the application (it stops the previous instance first):
+
+```
+start.cmd
+```
+
+Windows must be allowed to use the microphone: **Settings → Privacy & security → Microphone → Let desktop apps access your microphone**.
+
+Notes:
+
+- The text is pasted with Ctrl+V, so the target window has to be focused. A non-elevated app cannot paste into an elevated window, so run `start.cmd` as administrator if you dictate into such windows.
+- If a paste shows the previous clipboard instead of the dictation, increase `restore_clipborad_delay` in `config.py`.
+
 In Mac OS after running you will need to allow your application to monitor key strokes from another apps, access to Microphone, access to control other apps (to paste data), to do this after application was started:
 
 ### Allow access to monitor Hotkeys
