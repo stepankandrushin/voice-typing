@@ -12,7 +12,7 @@ Dictation app for voice typing using private whisper or any other transcription 
 brew install git
 brew install python3
 
-# In linux needed to Pyperclip module works:
+# On Linux, Pyperclip needs xclip:
 sudo apt-get install -y xclip python3 python3-pip
 
 # copy project
@@ -43,7 +43,7 @@ In Mac OS after running you will need to allow your application to monitor key s
 ### Allow access to Microphone
 1. Choose Apple menu  > System Settings, then click **Privacy & Security**
 2. Click on the right: **Microphone**
-3. Turn on the setting for Terminal app. (If you don't see Terminal, start the application ./start.sh and press your hotkey to activate querry to microphone)
+3. Turn on the setting for Terminal app. (If you don't see Terminal, start the application ./start.sh and press your hotkey so the app asks for the microphone)
 
 ### Allow access to Accessibility
 1. Choose Apple menu  > System Settings, then click **Privacy & Security**
@@ -60,7 +60,7 @@ You need to approve Terminal app in all 4 sections:
 ![You need to approve Terminal app in all 4 sections](img/privacy_security_all.jpeg)
  
 Example of approving Terminal app in Accessibility section:  
-![You need to approve Terminal app in all 4 sections](img/privacy_security_accessibility.jpeg)
+![Terminal app approved in the Accessibility section](img/privacy_security_accessibility.jpeg)
 
 
 ## Update application
