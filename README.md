@@ -1,8 +1,23 @@
 # voice-typing
 
-Dictation app for voice typing using private whisper or any other transcription server
+Dictation app for voice typing using a private Whisper or any other transcription server.
 
-  
+## Bundled transcription server
+
+This repository also includes a self-hosted Whisper server in [`server/`](server/README.md): FastAPI +
+faster-whisper, CPU or CUDA GPU, token authentication, the same `/transcribe` endpoint the client
+already uses. It is optional — the client works with any compatible server.
+
+Quick start:
+
+```bash
+cd server
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # Linux GPU: use requirements-cuda.txt
+cp .env.sample .env
+./run.sh
+```
+
+Then set `transcribe_server = 'http://127.0.0.1:8766/transcribe'` in `config.py`.
 
 ## Installation
 

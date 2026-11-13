@@ -52,6 +52,8 @@ mac_menu = [
     {'edit': 'Изменить', 'paste': 'Вставить'},
 ]
 
+# The bundled server from server/ in this repository runs at
+# 'http://127.0.0.1:8766/transcribe' by default; replace the line below to use it.
 # Note that http sends your recordings over the network in the clear, and that the
 # server decides which text gets pasted. Prefer https with a server you trust.
 transcribe_server = 'http://demo.voicehotkey.com:5000/transcribe'
